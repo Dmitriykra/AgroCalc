@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">AgroCalc</string>
+    <string name="weat">Пшениця</string>
+    <string-array name="crop_type">
+        <item>Пшениця</item>
+        <item>Кукурудза</item>
+        <item>Теплиця</item>
+        <item>Сад</item>
+        <item>Ягідник</item>
+    </string-array>
+</resources>
