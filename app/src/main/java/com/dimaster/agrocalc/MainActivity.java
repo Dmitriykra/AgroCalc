@@ -1,30 +1,38 @@
 package com.dimaster.agrocalc;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.dimaster.agrocalc.exception.MissingDomainObjectException;
+import com.dimaster.agrocalc.model.Crop;
+import com.dimaster.agrocalc.utility.TypedArrayUtility;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.util.Arrays;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "we";
-    TextView crop, npk;
-    int currentCropIndex = 0;
-    int totalCropNumber = ModelCrop.cropArray.length;
+    private static final String TAG = "CUSTOM_DEBUG";
+
+    //
+    private Map<String, Crop> cropsMappedByName;
+    int totalCropNumber;
+
+    private TextView crop, npk; // TODO: Set but not used
+    int currentCropIndex = 0; // TODO: Set but not used
+
     AutoCompleteTextView crop_list;
-    ArrayAdapter<String> adapterItems;
     TextInputLayout crop_til;
-    String selectedCrop;
+
+    ArrayAdapter<String> adapterItems;
     Double n, p, k;
 
     @Override
@@ -32,33 +40,52 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Map each `Crop` element in the received List<Crop> by its name
+        //   -> Makes it more comfortable to work with the collection,
+        //   -> as well as, make the code more readable
+        this.cropsMappedByName = TypedArrayUtility.getCropsFromResources(getResources())
+                .stream()
+                .collect(Collectors.toMap(Crop::getCropName, Function.identity()));
 
         crop = findViewById(R.id.crop);
         npk = findViewById(R.id.npk);
         crop_list = findViewById(R.id.crop_list);
         crop_til = findViewById(R.id.crop_til);
-        Log.d(TAG, "onCreate: "+totalCropNumber);
+
+        Log.d(TAG, "onCreate: " + cropsMappedByName.values().size());
+        Log.d(TAG, "onCreate, the following crops were read from resources: " + cropsMappedByName.values());
+
         cropList();
     }
 
-    //Drop down list of crops types
-    private void cropList(){
+    // Drop down list of crop types
+    private void cropList() {
         adapterItems = new ArrayAdapter<>(
                 this,
                 R.layout.list_item,
-                getResources().getStringArray(R.array.crop_type));
+                cropsMappedByName.values().stream().map(Crop::getCropName).collect(Collectors.toList()));
+
         crop_list.setAdapter(adapterItems);
+
         crop_list.setOnItemClickListener((parent, view, position, id) -> {
-            selectedCrop = parent.getItemAtPosition(position).toString();
+            final String selectedCropName = parent.getItemAtPosition(position).toString();
 
-            int i = Arrays.asList(ModelCrop.cropArray).indexOf(selectedCrop);
+            final Optional<Crop> selectedCropOptional = Optional.ofNullable(
+                    cropsMappedByName.get(selectedCropName)
+            );
 
-            if(selectedCrop.equals(ModelCrop.cropArray[i])) {
-                n = ModelCrop.npkUsesFromSoil[i][0];
-                p = ModelCrop.npkUsesFromSoil[i][1];
-                k = ModelCrop.npkUsesFromSoil[i][2];
-                Log.d(TAG, "cropList: " + n + " " + p + " " + k);
-            }
+            final Crop selectedCrop = selectedCropOptional.orElseThrow(() ->
+                    new MissingDomainObjectException(
+                            String.format(
+                                    "The selected name by user [%s] is not present!",
+                                    selectedCropName
+                            )));
+
+            n = selectedCrop.getN();
+            p = selectedCrop.getP();
+            k = selectedCrop.getK();
+
+            Log.d(TAG, "cropList: " + n + " " + p + " " + k);
         });
     }
 }

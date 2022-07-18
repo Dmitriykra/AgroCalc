@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--  Aggregated Array of `Crop` Info Elements  -->
+    <array name="crops">
+        <item>@array/wheat</item>
+        <item>@array/corn</item>
+        <item>@array/greenhouse</item>
+        <item>@array/garden</item>
+        <item>@array/berry_picker</item>
+        <item>@array/kitka</item>
+    </array>
+
+    <!--  Individual `Crop` Info Array Units  -->
+    <array name="wheat">
+        <item>Пшениця</item>
+        <item>26</item>
+        <item>8.5</item>
+        <item>20</item>
+    </array>
+    <array name="corn">
+        <item>Кукурудза</item>
+        <item>21</item>
+        <item>12</item>
+        <item>28</item>
+    </array>
+    <array name="greenhouse">
+        <item>Теплиця</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </array>
+    <array name="garden">
+        <item>Сад</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </array>
+    <array name="berry_picker">
+        <item>Ягідник</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </array>
+    <array name="kitka">
+        <item>Кітка</item>
+        <item>69</item>
+        <item>42</item>
+        <item>3.5</item>
+    </array>
+
+</resources>
